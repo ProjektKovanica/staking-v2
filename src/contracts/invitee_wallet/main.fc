@@ -47,10 +47,10 @@
 
         (slice balance_slice, int found) = storage::balances.udict_get?(32, pool_id);
         int balance = found ? balance_slice~load_coins() : 0;
-        balance += balance_change;
-        if (balance < 0) {
-            balance_change = balance - balance_change;
-            balance = 0;
+        int new_balance = balance + balance_change;
+        if (new_balance < 0) {
+            balance_change = 0 - balance;
+            new_balance = 0;
         }
         
         if (balance_change != 0) {
@@ -63,7 +63,7 @@
                         .end_cell();
             send_cell_message(storage::referrer_wallet_address, 0, payload, mode::CARRY_REMAINING_BALANCE);
             
-            storage::balances~udict_set_builder(32, pool_id, begin_cell().store_coins(balance));
+            storage::balances~udict_set_builder(32, pool_id, begin_cell().store_coins(new_balance));
             save_data();
             return ();
         }

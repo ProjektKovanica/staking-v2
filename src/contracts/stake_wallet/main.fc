@@ -15,19 +15,18 @@
     slice sender_address = cs~load_msg_addr();
     int max_fwd_fee = muldiv(get_forward_fee(WORKCHAIN, UPDATE_MSG_BITS, UPDATE_MSG_CELLS), 3, 2); 
 
+    load_data();
+    
     if (flags & 1) {  ;; bounced messages
         in_msg_body~skip_bits(32);
         int op = in_msg_body~load_uint(32);
         if (op == op::SEND_CLAIMED_REWARDS) {
-            load_data();
             storage::is_active = true;
             save_data();
         }
         send_excess(storage::owner_address, 0, 0, mode::CARRY_REMAINING_GAS | mode::IGNORE_ERRORS);
         return ();
     }
-    
-    load_data();
 
     int op = in_msg_body~load_uint(32);
     int query_id = in_msg_body~load_uint(64);
@@ -128,9 +127,13 @@
         }
 
         if (op == op::SET_CODE) {
-            set_code(in_msg_body~load_ref());
-            if (in_msg_body.slice_refs()) {
-                set_data(in_msg_body~load_ref());
+            cell code = in_msg_body~load_maybe_ref();
+            ifnot (null?(code)) {
+                set_code(code);
+            }
+            cell data = in_msg_body~load_maybe_ref();
+            ifnot (null?(data)) {
+                set_data(data);
             }
             return ();
         }
