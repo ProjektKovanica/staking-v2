@@ -1,0 +1,96 @@
+#include "imports/stdlib.fc";
+
+/**
+ * JettonStakingPool.fc
+ * 
+ * Pametni ugovor za KVNC staking sa više lock perioda
+ * 
+ * Lock periodi: 30, 60, 90, 180, 365, 730, 1460 dana
+ * Sa multiplierima za APY
+ * 
+ * Arhitektura:
+ * - Pool prima KVNC jetton-e
+ * - Vraća StakedJetton (ERC20-like) kao receipt
+ * - Čuva stake info po korisnikuDataMap
+ * - Nakon lock perioda dozvoljava unstake
+ * - Instant unstake sa fee-om
+ */
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure inline {
+    if (in_msg_body.slice_empty?()) {
+        return ();
+    }
+
+    int op = in_msg_body~load_uint(32);
+    int query_id = in_msg_body~load_uint(64);
+
+    if (op == 0x12345678) { ;; op::stake
+        ;; Korisnik stakea KVNC
+        int lock_period_days = in_msg_body~load_uint(32);
+        int kvnc_amount = in_msg_body~load_coins();
+        
+        ;; TODO: Validiraj lock period
+        ;; TODO: Spremi stake info sa timestamp-om
+        ;; TODO: Šalji StakedJetton korisnikuReceiver
+        
+        return ();
+    }
+
+    if (op == 0x87654321) { ;; op::unstake
+        ;; Korisnik unstakea (nakon lock perioda)
+        int staked_jetton_amount = in_msg_body~load_coins();
+        
+        ;; TODO: Provjeri da je lock period prošao
+        ;; TODO: Izračunaj reward
+        ;; TODO: Vrati KVNC + reward
+        
+        return ();
+    }
+
+    if (op == 0x99999999) { ;; op::instant_unstake
+        ;; Instant unstake sa fee-om (bez čekanja)
+        int staked_jetton_amount = in_msg_body~load_coins();
+        
+        ;; TODO: Izračunaj fee (5% po defaultu)
+        ;; TODO: Vrati KVNC - fee
+        ;; TODO: Fee ide u treasury
+        
+        return ();
+    }
+
+    if (op == 0x11111111) { ;; op::claim_rewards
+        ;; Preuzmi rewards bez unstake-a
+        slice reward_jetton_master = in_msg_body~load_slice();
+        
+        ;; TODO: Izračunaj pending rewards
+        ;; TODO: Kreiraj reward jetton transfer
+        
+        return ();
+    }
+
+    throw_if(0xffff, 1);
+}
+
+;; GET METHODS
+
+(int, int, slice, slice, slice) get_pool_info() method_inline {
+    ;; Vrati pool informacije
+    ;; - total_staked
+    ;; - total_rewards_distributed
+    ;; - admin_address
+    ;; - kvnc_jetton_master
+    ;; - staked_jetton_address
+    
+    return (0, 0, empty_slice(), empty_slice(), empty_slice());
+}
+
+(int, int, int, int, int) get_user_stake(slice user_address) method_inline {
+    ;; Vrati stake info za korisnika
+    ;; - staked_amount
+    ;; - staked_timestamp
+    ;; - lock_period_days
+    ;; - unlock_time
+    ;; - pending_rewards
+    
+    return (0, 0, 0, 0, 0);
+}
