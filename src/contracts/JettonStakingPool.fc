@@ -1,5 +1,15 @@
 #include "imports/stdlib.fc";
 
+;; Dozvoljeni lock periodi u danima (vidi opis contracta ispod)
+const int err::invalid_lock_period = 47;
+
+;; Provjeri da li je lock period jedan od dozvoljenih (30, 60, 90, 180, 365, 730, 1460 dana)
+int is_valid_lock_period(int lock_period_days) inline {
+    return (lock_period_days == 30) | (lock_period_days == 60) | (lock_period_days == 90)
+         | (lock_period_days == 180) | (lock_period_days == 365) | (lock_period_days == 730)
+         | (lock_period_days == 1460);
+}
+
 /**
  * JettonStakingPool.fc
  * 
@@ -28,8 +38,9 @@
         ;; Korisnik stakea KVNC
         int lock_period_days = in_msg_body~load_uint(32);
         int kvnc_amount = in_msg_body~load_coins();
-        
-        ;; TODO: Validiraj lock period
+
+        ;; Validiraj lock period - mora biti jedan od dozvoljenih perioda
+        throw_unless(err::invalid_lock_period, is_valid_lock_period(lock_period_days));
         ;; TODO: Spremi stake info sa timestamp-om
         ;; TODO: Šalji StakedJetton korisnikuReceiver
         
