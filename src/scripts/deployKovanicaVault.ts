@@ -15,12 +15,14 @@ import { JettonWallet } from '../wrappers/JettonWallet';
  *
  * Parametri (odluka vlasnika 2026-08-02):
  *  - lock periodi 30/60/90/180/360 dana → multiplikatori 1,2/1,5/2/3/5x
- *  - budžet nagrada 10.000.000 KVNC kroz 90 dana (puni se iz 150M reward bucketa)
+ *  - budžet nagrada 10.000.000 KVNC kroz 90 dana — puni se iz 350M pool-a
+ *    (KVNC treasury UQA9aQ…OkYn7; isti izvor kao tap i off-chain APY), omeđen na
+ *    tih 10M/90d kao izričit staking budžet (ECONOMY.md)
  *  - 0% deposit/unstake komisija, 0% reward komisija (admin = mi)
  *
  * ⚠️ MAINNET, PRAVI KVNC. Prije pokretanja:
  *  1) deploy-wallet (provider.sender) MORA biti wallet iz kojeg šalješ 10M KVNC
- *     (150M reward bucket) i imati ≥ ~2 TON gasa;
+ *     — 350M pool / KVNC treasury (UQA9aQ…OkYn7) — i imati ≥ ~2 TON gasa;
  *  2) provjeri KVNC_MASTER dolje;
  *  3) NODE_ENV/mreža moraju biti mainnet; prvo pokreni bez zadnjeg koraka
  *     (SKIP_FUND=1) da vidiš pool adresu, upiši je u STAKING_POOL_ADDRESS, pa
