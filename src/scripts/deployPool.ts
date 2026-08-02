@@ -41,6 +41,7 @@ export async function run(provider: NetworkProvider) {
     // let poolFactoryConfig: PoolFactoryConfig;
     let poolFactoryConfig: PoolFactoryConfig = {
         adminAddress: provider.sender().address as Address,
+        ownerAddress: provider.sender().address as Address,
         nextPoolId: 0n,
         collectionContent: buildOnchainMetadata({image: "https://jvault.xyz/static/images/logo256.png", description: "In mainnet soon..", name: "JVault Staking Pools"}),
         minRewardsCommission: BigInt(0.005 * Number(Dividers.COMMISSION_DIVIDER)),  // 0.5%
@@ -105,7 +106,11 @@ export async function run(provider: NetworkProvider) {
     await feesWallet.sendTransfer(
         provider.sender(), toNano(50), poolFactory.address, provider.sender().address as Address, toNano("0.5"), deployPayload
     )
-    let stakingPool = provider.open(StakingPool.createFromConfig({poolId: poolFactoryConfig.nextPoolId, factoryAddress: poolFactory.address}, await compile('StakingPoolUninited')));
+    // Adresa poola se izvodi iz FACTORYJA (get_nft_address_by_index) — factory
+    // koristi svoj ugrađeni POOL_UNINITED_CODE, koji se razlikuje od svježe
+    // kompajliranog StakingPoolUninited. createFromConfig(...compile('StakingPoolUninited'))
+    // daje KRIVU adresu → waitForDeploy bi visio i istekao iako je pool deployan.
+    let stakingPool = provider.open(StakingPool.createFromAddress(await poolFactory.getNftAddressByIndex(poolFactoryConfig.nextPoolId)));
     await provider.waitForDeploy(stakingPool.address, 30);
     console.log("staking pool ✅")
     console.log(await stakingPool.getData())
