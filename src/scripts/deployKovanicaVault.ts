@@ -20,13 +20,17 @@ import { JettonWallet } from '../wrappers/JettonWallet';
  *    tih 10M/90d kao izričit staking budžet (ECONOMY.md)
  *  - 0% deposit/unstake komisija, 0% reward komisija (admin = mi)
  *
+ * Deploy-model (odluka vlasnika: opcija B — ODVOJEN admin wallet):
+ *  - provider.sender = ZASEBAN deploy/admin wallet (postaje pool admin), NE treasury;
+ *  - taj wallet se UNAPRIJED napuni s 10M KVNC iz 350M treasuryja (UQA9aQ…OkYn7)
+ *    + ~2 TON gasa. Treasury tako ostaje samo izvor novca, a admin ključ je odvojen.
+ *
  * ⚠️ MAINNET, PRAVI KVNC. Prije pokretanja:
- *  1) deploy-wallet (provider.sender) MORA biti wallet iz kojeg šalješ 10M KVNC
- *     — 350M pool / KVNC treasury (UQA9aQ…OkYn7) — i imati ≥ ~2 TON gasa;
+ *  1) prebaci 10.000.000 KVNC iz treasuryja na deploy-wallet i dodaj mu ~2 TON;
  *  2) provjeri KVNC_MASTER dolje;
- *  3) NODE_ENV/mreža moraju biti mainnet; prvo pokreni bez zadnjeg koraka
- *     (SKIP_FUND=1) da vidiš pool adresu, upiši je u STAKING_POOL_ADDRESS, pa
- *     tek onda napuni nagrade.
+ *  3) mreža mora biti mainnet; prvo pokreni SKIP_FUND=1 da dobiješ pool adresu,
+ *     provjeri je (backend/scripts/checkStakingPool.ts), upiši u STAKING_POOL_ADDRESS,
+ *     pa tek onda pokreni ponovno (bez SKIP_FUND) da napuniš nagrade.
  *
  * Nakon deploya: adresu poola upiši u backend/.env.production STAKING_POOL_ADDRESS.
  */
