@@ -41,6 +41,7 @@ export async function run(provider: NetworkProvider) {
     // let poolFactoryConfig: PoolFactoryConfig;
     let poolFactoryConfig: PoolFactoryConfig = {
         adminAddress: provider.sender().address as Address,
+        ownerAddress: provider.sender().address as Address,
         nextPoolId: 0n,
         collectionContent: buildOnchainMetadata({image: "https://jvault.xyz/static/images/logo256.png", description: "In mainnet soon..", name: "JVault Staking Pools"}),
         minRewardsCommission: BigInt(0.005 * Number(Dividers.COMMISSION_DIVIDER)),  // 0.5%
